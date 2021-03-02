@@ -1,6 +1,7 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
+#include <unistd.h>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,10 @@ class System {
 
   // TODO: Define any necessary private members
  private:
+  std::string os_name{""};
+  std::string kernel{""};
   Processor cpu_ = {};
+  long cpu_uptime{0};
   std::vector<Process> processes_ = {};
 };
 

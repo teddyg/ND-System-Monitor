@@ -10,24 +10,38 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-// TODO: Return this process's ID
-int Process::Pid() { return 0; }
+// constructor
+Process::Process(int pid, string user, long uptime, long cpu_uptime, long active_jiffies, string ram, string cmdline) : 
+pid(pid), user(user), uptime(uptime), cpu_uptime(cpu_uptime), active_jiffies(active_jiffies), ram(ram), cmdline(cmdline) {}
 
-// TODO: Return this process's CPU utilization
-float Process::CpuUtilization() { return 0; }
+// Return this process's Id
+int Process::Pid() { return pid; }
 
-// TODO: Return the command that generated this process
-string Process::Command() { return string(); }
+// Return this process's CPU utilization
+float Process::CpuUtilization() {
+  // seconds to calculate by is the difference between cpu and process uptime
+  long seconds = cpu_uptime - uptime;
+  return (float)(active_jiffies/(float)sysconf(_SC_CLK_TCK))/(float)seconds;
+}
 
-// TODO: Return this process's memory utilization
-string Process::Ram() { return string(); }
+// Return the command tht generated this process
+string Process::Command() { return cmdline; }
 
-// TODO: Return the user (name) that generated this process
-string Process::User() { return string(); }
+// Return this process's memory utilization
+string Process::Ram() { return ram; }
 
-// TODO: Return the age of this process (in seconds)
-long int Process::UpTime() { return 0; }
+// Return the user (name) that generated this process
+string Process::User() { return user; }
 
-// TODO: Overload the "less than" comparison operator for Process objects
-// REMOVE: [[maybe_unused]] once you define the function
-bool Process::operator<(Process const& a[[maybe_unused]]) const { return true; }
+// Return the age of this process (in seconds)
+long int Process::UpTime() { return uptime; }
+
+// overload less than operator to sort in descending order based on cpu usage
+bool Process::operator<(Process const& a) const {
+  long b_seconds = this->cpu_uptime - this->uptime;
+  float b_cpu = 100*((float)(this->active_jiffies/(float)sysconf(_SC_CLK_TCK))/(float)b_seconds);
+  long a_seconds = a.cpu_uptime - a.uptime;
+  float a_cpu = 100*((float)(a.active_jiffies/(float)sysconf(_SC_CLK_TCK))/(float)a_seconds);
+  
+  return b_cpu > a_cpu;
+}
